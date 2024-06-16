@@ -1,0 +1,21 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: counter
+build:
+  artifacts:
+    - image: web
+      docker:
+        dockerfile: dockerfile
+manifests:
+  rawYaml:
+    - web-deployment.yaml
+profiles:
+  - name: ''
+    build:
+      artifacts:
+        - image: web
+          docker:
+            dockerfile: dockerfile
+      tagPolicy:
+        sha256: {}
