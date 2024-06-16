@@ -1,5 +1,5 @@
 var http = require("http");
-var count = 0;
+
 var fs = require("fs");
 
 http
