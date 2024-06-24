@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      svs: redis # has to match .spec.template.metadata.labels 서비스 라벨로 pod를 관리
+  serviceName: "redis" #deployment와 차이점
+  replicas: 3 # by default is 1
+  template: #생성되는 pod의 사향
+    metadata:
+      svs:
+        app: redis # has to match .spec.selector.matchLabels
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          command: #아래 명령어를 통해 조건문 작성: redis-0은 마스터, redis-1 부터 ~ slave서버로 명시해줌
+            - sh
+            - -c
+            - |
+              if [ `hostname` = redis-0]; then
+                redis-server
+              else
+                redis-server --replicasof redis-0.redis.default.svc.Cluster.local 6379
+              fi
+          ports:
+            - containerPort: 6397
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates: #deployment와 차이점: persistant volume 생성 -> container에서 mount해서 사용
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce #한 노드에서 read, write가 가능함
+        resources:
+          requests:
+            storage: 10ki
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: default
+spec:
+  selector:
+    svc: redis
+  type: ClusterIP
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+    - name: redis
+      port: 6379

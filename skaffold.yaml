@@ -7,6 +7,12 @@ build:
     - image: web
       docker:
         dockerfile: dockerfile
+    - image: web-inc
+      docker:
+        dockerfile: dockerfile-inc
 manifests:
   rawYaml:
     - web-deployment.yaml
+    - web-inc-deployment.yaml
+    - redis-deployment.yaml
+    - ingress.yaml
