@@ -17,6 +17,24 @@ spec:
           ports:
             - containerPort: 8082
           imagePullPolicy: Never
+          volumeMounts:
+            - mountPath: /data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1ki
 ---
 apiVersion: v1
 kind: Service

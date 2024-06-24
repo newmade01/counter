@@ -4,10 +4,10 @@ var fs = require("fs");
 
 http
   .createServer(function (request, response) {
-    fs.readFile("count.txt", function (err, data) {
+    fs.readFile("/data/count.txt", function (err, data) {
       if (data) count = parseInt(data);
       count = count + 1;
-      fs.writeFileSync("count.txt", count.toString());
+      fs.writeFileSync("/data/count.txt", count.toString());
 
       response.writeHead(200, { "Content-Type": "text/plain" });
       response.end(count.toString());
